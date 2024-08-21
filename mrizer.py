@@ -8,7 +8,7 @@ import properties_GUI
 
 def get_version():
     file_size = os.path.getsize('mrizer.py')
-    return str(file_size / 1000)[:4]
+    return f'1.{str(file_size / 1000)[:4]}'
 
 def open_folder(dir):
     #Check if there's contents

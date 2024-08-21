@@ -1,62 +1,81 @@
 import os
-import asyncio
+import threading
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
+import json
+
+with open('data.json') as file:
+    data = json.load(file)
 
 gauth = GoogleAuth()
 drive = GoogleDrive(gauth)
 
-folders_to_upload_dir = '/home/c3po/Desktop/Photos' # Don't forget to set it to MRizer Output as we're pulling it from there
-my_folder_id = '1ixdDaRNmi3Yf0zqm1fDsaY9Ka8KN5KeJ'
-folder_360_id = '1CCUBuc8z0AENcWFUc0nCnDzTFex5swOd'
+folders_to_upload_dir = f'{data["output"]}/Photos' # get the output
 
-async def upload_file(file_path, folder):
-    # Define File Metadata for upload
-    filename = os.path.basename(file_path)
-    file_meta = {
-        'title': filename,
-        'parents': [{'id': folder['id']}]
-        }
-    file_to_upload = drive.CreateFile(file_meta)
+threads = []
+def upload_file(file_path, folder):
+    def task():
+        # Define File Metadata for upload
+        filename = os.path.basename(file_path)
+        file_meta = {
+            'title': filename,
+            'parents': [{'id': folder['id']}]
+            }
+        file_to_upload = drive.CreateFile(file_meta)
+        
+        print('Uploading:', file_path)
+        file_to_upload.SetContentFile(file_path)
+        file_to_upload.Upload()
+
+    thread = threading.Thread(target=task)
+    threads.append(thread)
+    thread.start()
     
-    print('Uploading:', file_path)
-    file_to_upload.SetContentFile(file_path)
-    file_to_upload.Upload()
+def upload_to_drive(path, folder_id):
+    title = os.path.basename(path)
+    # First check if folder exist on drive. If so, create another folder.
+    file_list = drive.ListFile({'q': "'{}' in parents and title = '{}'".format(folder_id, title)}).GetList()
+    if file_list:
+        for num in range(1, 10):
+            # Search for existing folder duplicates from 1 - 10
+            new_title = f"{title}({num})"
+            file_list = drive.ListFile({'q': "'{}' in parents and title = '{}'".format(folder_id, new_title)}).GetList()
+            if not file_list:
+                break
+            if num == 10:
+                # If this loop successfully reaches 10, then raise an error
+                raise ValueError(f"{title}. There are too many duplicates with that name.")
+        title = new_title
 
-async def upload_to_drive(id, folder_name):
-    tasks = []
-##    # Use query to search for folders with matching title
-##    query = f"'title': '{folder_name}' and trashed=false" 
-##    file_list = drive.ListFile({'q': query}).GetList()
-##
-##    # Check if any folders were found
-##    if len(file_list) > 0:
-##        print(f'Folder "{folder_name}" already exists on your Drive.')
-##        
-##    else:   # Folder not found, proceed with folder creation
-##        # Create a new File object representing the folder
-    # Folder creation with mimeType for clarity
-    folder_meta = {'parents': [{'id': id}], 'title': folder_name, 'mimeType': 'application/vnd.google-apps.folder'}
+    # Create folder
+    folder_meta = {'parents': [{'id': folder_id}], 'title': title, 'mimeType': 'application/vnd.google-apps.folder'}
     folder = drive.CreateFile(folder_meta)
     folder.Upload()
 
-    directory = os.path.join(folders_to_upload_dir, folder_name) # path
-    for file in os.listdir(directory):
-        file_path = os.path.join(directory, file)
-        tasks.append(asyncio.create_task(upload_file(file_path, folder)))
-    await asyncio.gather(*tasks)
+    for item in os.listdir(path):
+        item_path = os.path.join(path, item)
+        if os.path.isfile(item_path):
+            upload_file(item_path, folder)
+        else:  # Assuming it's a directory
+            upload_to_drive(folder_id=folder['id'], path=item_path)
+            
                     
 def execute():
     """Go to the output directory and upload folders to drive"""
     for folder_name in os.listdir(folders_to_upload_dir):
+        path = os.path.join(folders_to_upload_dir, folder_name)
         if 'Bank' in folder_name or 'Pvt' in folder_name:
-            asyncio.run(upload_to_drive(id=folder_360_id, folder_name=folder_name))
+            upload_to_drive(folder_id=data["folder_360_id"], path=path)
         else:
-            asyncio.run(upload_to_drive(id=my_folder_id, folder_name=folder_name))
+            upload_to_drive(folder_id=data["my_folder_id"], path=path)
+    # Wait for all threads to finish
+    for thread in threads:
+        thread.join()
 
 
 ##file1 = drive.CreateFile({'parents': [{'id': my_folder}], 'title': 'hello.txt'})
 ##file1.SetContentString('Hello World')
 ##file1.Upload()
 if __name__ == '__main__':
+    pass
     execute()

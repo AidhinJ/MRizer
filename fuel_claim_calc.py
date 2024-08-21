@@ -1,26 +1,5 @@
 from datetime import datetime
 
-##apps = {'MR637846': 56,
-##        'MR637557': 80,
-##        'MR637432 and KEYS': 93,
-##        'MR617028': 110,
-##        'MR261985': 127,
-##        'HOME': 172
-##        }
-##
-##string=''
-##previous_app = 0
-##for app in apps:
-##    mileage = apps[app]
-##    if type(mileage) is tuple:
-##        dist = mileage[0] - previous_app
-##        previous_app = mileage[1]
-##    else:
-##        dist = mileage - previous_app
-##        previous_app = apps[app]
-##    string=f'{string}{app}\t{dist}\t'
-####print(string)
-
 date_format = "%H:%M, %d/%m/%Y"
 
 def has_date_time(str):

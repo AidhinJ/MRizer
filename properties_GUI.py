@@ -84,7 +84,7 @@ class CollapsibleDevice(extras.CollapsibleFrame):
         self.save_button.grid(column=1, row=4, sticky=tk.E)
 
     def select_path(self):
-        self.path = filedialog.askdirectory()
+        self.path = filedialog.askdirectory(initialdir='/run/user/1000/gvfs/')
         if self.path:
             self.path_var.set(self.path)
 
@@ -131,17 +131,22 @@ class CUploadToDrive(extras.CollapsibleFrame):
         super().__init__(*args, **kwargs)
         self.pack(fill=tk.X)
 
-        self.folder_id_var = tk.StringVar(self._contents, value='device["name"]')
+        self.folder_id_var = tk.StringVar(self._contents, value=data["my_folder_id"])
+        self.folder_id_var.trace("w", self.notify_changes)
         folder_id_label = tk.Label(self._contents, text="Folder ID:")
         folder_id_label.grid(column=0, row=0, sticky=tk.W)
         folder_id_entry = tk.Entry(self._contents, textvariable=self.folder_id_var)
         folder_id_entry.grid(column=1, row=0, sticky=tk.W)
 
-        self.folder_360_id_var = tk.StringVar(self._contents, value='device["name"]2')
+        self.folder_360_id_var = tk.StringVar(self._contents, value=data["folder_360_id"])
+        self.folder_360_id_var.trace("w", self.notify_changes)
         folder_360_id_label = tk.Label(self._contents, text="360 Folder ID:")
         folder_360_id_label.grid(column=2, row=0, sticky=tk.W)
         folder_360_id_entry = tk.Entry(self._contents, textvariable=self.folder_360_id_var)
         folder_360_id_entry.grid(column=3, row=0, sticky=tk.W)
+
+        self.save_id_button = tk.Button(self._contents, text="Saved", bg="green", command=self.save_folder_ids, state=tk.DISABLED)
+        self.save_id_button.grid(column=4, row=0, sticky=tk.W)
 
         upload_button = tk.Button(self._contents, text="Upload", command=upload_to_drive.execute)
         upload_button.grid(column=0, row=1, sticky=tk.W)
@@ -149,6 +154,18 @@ class CUploadToDrive(extras.CollapsibleFrame):
         self.is_auto_upload = tk.BooleanVar(self._contents)
         check_auto_upload = tk.Checkbutton(self._contents, text="Auto Upload", variable=self.is_auto_upload)
         check_auto_upload.grid(column=0, row=2, sticky=tk.W)
+
+    def save_folder_ids(self):
+        with open('data.json', 'w') as file:
+            data['my_folder_id'] = self.folder_id_var.get()
+            data['folder_360_id'] = self.folder_360_id_var.get()
+            json.dump(data, file)
+        self.save_id_button['text'] = 'Saved'
+        self.save_id_button['state'] = tk.DISABLED
+
+    def notify_changes(self, var_name=0, index=0, mode=0):
+        self.save_id_button["text"] = "Save changes"
+        self.save_id_button["state"] = tk.NORMAL
 
         
 class C_OpenLinks(extras.CollapsibleFrame):

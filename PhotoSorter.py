@@ -6,11 +6,8 @@ import settings2
 import logging
 import extras
 import MR_Cards
-import upload_to_drive
 
-# Load data
-with open('data.json') as file:
-    data = json.load(file)
+
     
 # Configure logging (optional, but recommended for clean formatting)
 logging.basicConfig(filename="mr.log", level=logging.INFO,
@@ -19,11 +16,7 @@ logging.basicConfig(filename="mr.log", level=logging.INFO,
 # Create a logger for this module
 logger = logging.getLogger(__name__)
 
-class PhotoSorter:
-    def __init__(self):
-        self.upload = upload_to_drive.execute
-        
-        
+class PhotoSorter:        
     def get_app_data(self):
         """Pack all the info from the appointment stack, MR, start_time, end_time"""
         mr_date_time = []
@@ -93,7 +86,8 @@ class PhotoSorter:
                 return f'{directory}{file}'
 
     def device_iter(self):
-        for device in settings2.devices:
+        orig_dir = os.getcwd()
+        for device in settings2.get_data()['devices']:
             try:
                 os.chdir(device['dir'])
             except Exception as e:
@@ -104,11 +98,13 @@ class PhotoSorter:
             else:
                 resize = lambda file: None
             self.file_iter(is_360=device['is_360'], resize=resize)
+            os.chdir(orig_dir) # Once finished, revert to the default dir
         
 
     def tasks(self):
-        # Getting output before beginning mrizing
-        self.output = settings2.default['output']
+        # Getting current output before beginning mrizing
+        self.output = settings2.get_data()['output']
+        
         # Get appointment data
         self.appointment_data = self.get_app_data()
         self.start_mrizing_time = dt.now() # For logging purposes.
@@ -150,6 +146,7 @@ class PhotoSorter:
 
     def store_mr_numbers(self):
         for appointment in self.appointment_data:
+            data = settings2.get_data()
             mr = appointment[0]
             data['storedMRnumbers'].append(mr)
         with open('data.json', 'w') as file:        

@@ -2,14 +2,12 @@ import json
 import tkinter as tk
 from tkinter.filedialog import askdirectory
 
-# Loads default settings as soon as program starts up
-with open("data.json", 'r') as file:
-    default = json.load(file)
+def get_data():
+    with open("data.json", 'r') as file:
+        return json.load(file)
 
-##devices = [{'name': 'Camera', 'dir': '/run/user/1000/gvfs/gphoto2:host=NIKON_NIKON_DSC_COOLPIX_B500_000090070169/DCIM/101NIKON/', 'is_360': False, 'showinfo': 'Copying photos...', 'resizable': True},
-##           {'name': '360s', 'dir': '/run/user/1000/gvfs/gphoto2:host=Ricoh_Company__Ltd._RICOH_THETA_SC2_20104154/DCIM/101RICOH/', 'is_360': True, 'showinfo': 'Copying 360s...', 'resizable': False},
-##           {'name': 'Disto', 'dir': '/media/c3po/07EF-0121/Apex Backups', 'is_360': False, 'showinfo': 'Copying from disto...', 'resizable': False}]
-devices = default['devices']
+# Loads default settings as soon as program starts up
+default = get_data()
     
 class DirSettings():
     def __init__(self):
@@ -71,7 +69,3 @@ class Device(tk.Frame):
         self.button_var.set(f'{self.name}: {self.dir}')
         
 
-if __name__ == '__main__':
-    window = tk.Tk()
-    dirsettings = DirSettings()
-    dirsettings.open_dir_win(window)
