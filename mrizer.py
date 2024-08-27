@@ -1,10 +1,13 @@
 import tkinter as tk
+from tkinter import messagebox
 import os
 import subprocess
 import settings2
 import PhotoSorter
 import MR_Cards
 import properties_GUI
+
+photosorter = PhotoSorter.PhotoSorter()
 
 def get_version():
     file_size = os.path.getsize('mrizer.py')
@@ -26,6 +29,13 @@ def open_folder(dir):
     elif os.name == 'posix':  # macOS/Linux
         subprocess.Popen(['xdg-open', dir])
 
+def mrize():
+    try:
+        photosorter.tasks()
+    except Exception as e:
+        tk.messagebox.showinfo(e.args[0], e.args[1])
+        
+
 def main():
     root = tk.Tk()
     root.title(f"MRizer v{get_version()}")
@@ -38,10 +48,8 @@ def main():
     mr_cards = MR_Cards.MR_Cards(height=100, width=100, bg='Navy')
     mr_cards.grid(row=0, column=0, sticky='n')
 
-    photosorter = PhotoSorter.PhotoSorter()
-
     mrize_ico = tk.PhotoImage(file=mrize_ico_path)
-    button = tk.Button(root, image=mrize_ico, command=photosorter.tasks)
+    button = tk.Button(root, image=mrize_ico, command=mrize)
     button.grid(row=1, column=0)
 
 ##    task_manager = tk.Text(width=20, height=10)
@@ -53,7 +61,8 @@ def main():
     try:
         open_folder(f"{settings2.default['output']}/Photos")
     except Exception as e:
-        print(e)
+        pass
+##        tk.messagebox.askquestion("MR-izer setup", "Welcome to MRizer. Would you like to quickly setup?")
     root.mainloop()
 
 if __name__ == "__main__":

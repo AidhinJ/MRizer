@@ -102,11 +102,16 @@ class PhotoSorter:
         
 
     def tasks(self):
+        # Get appointment data
+        self.appointment_data = self.get_app_data()
+        if self.appointment_data == []:
+            raise ValueError("No appointments", "No appointment data to MR-ize.")
+        
         # Getting current output before beginning mrizing
         self.output = settings2.get_data()['output']
         
-        # Get appointment data
-        self.appointment_data = self.get_app_data()
+        
+        print(self.appointment_data)
         self.start_mrizing_time = dt.now() # For logging purposes.
         logger.info(f"MRrizing.............................................")
 
@@ -145,12 +150,15 @@ class PhotoSorter:
                 print(e, dir)
 
     def store_mr_numbers(self):
+        # Stores MR numbers. (Granted there's data)
+        data = ""
         for appointment in self.appointment_data:
             data = settings2.get_data()
             mr = appointment[0]
             data['storedMRnumbers'].append(mr)
-        with open('data.json', 'w') as file:        
-            json.dump(data, file)
+        if data:
+            with open('data.json', 'w') as file:        
+                json.dump(data, file)
         
 
 

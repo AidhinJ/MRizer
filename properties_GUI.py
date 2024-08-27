@@ -10,6 +10,14 @@ import upload_to_drive
 with open('data.json') as file:
     data = json.load(file)
 
+def error_check(call):
+    def check():
+        try:
+            call()
+        except Exception as e:
+            tk.messagebox.showinfo(e.args[1], e)
+    return check
+
 
 class OpenLinks_GUI(tk.Frame):
     def __init__(self, *args, **kwargs):
@@ -148,7 +156,7 @@ class CUploadToDrive(extras.CollapsibleFrame):
         self.save_id_button = tk.Button(self._contents, text="Saved", bg="green", command=self.save_folder_ids, state=tk.DISABLED)
         self.save_id_button.grid(column=4, row=0, sticky=tk.W)
 
-        upload_button = tk.Button(self._contents, text="Upload", command=upload_to_drive.execute)
+        upload_button = tk.Button(self._contents, text="Upload", command=error_check(upload_to_drive.execute))
         upload_button.grid(column=0, row=1, sticky=tk.W)
 
         self.is_auto_upload = tk.BooleanVar(self._contents)
