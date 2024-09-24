@@ -13,15 +13,15 @@ Python (version 3.8.10 or later) must be installed on your system. You can check
 Install the following packages by running in the terminal: (Make sure pip is installed. You can check using "pip --version")
 
 pip install pydrive2<br>
-pip install opencv-python
-pip install testresources
+pip install opencv-python<br>
+pip install testresources<br>
 sudo apt-get install python3-tk (This may be needed)
 
-To run the code, you can open the terminal. Be sure to change directory to where the code is located using cd
+To run the code, you can open the terminal. Be sure to change directory to where the code is located using cd.
 
-run: 
 python3 mrizer.py
 
-Otherwise simply run the mrizer.py in your IDE
+Otherwise simply run the mrizer.py in your IDE.
 
-## client_secrets.json, credentials.json, settings.yaml must be set up
+## client_secrets.json, credentials.json, settings.yaml must be set up.
+I will set this up in future. But for now, you'll need to do this manually
