@@ -4,8 +4,6 @@
 
 MRizer is a Python program that helps you manage photos and files from directories by sorting them into specific folders. It also performs operations, such as resize, and upload to google.
 
-## Installation and Usage
-
 ## How to install and run MRizer
 
 Python (version 3.8.10 or later) must be installed on your system. You can check your Python version by running `python --version` or `python3 --version` in your terminal.
@@ -23,5 +21,8 @@ python3 mrizer.py
 
 Otherwise simply run the mrizer.py in your IDE.
 
+## Upload to drive. client_secrets.json, credentials.json, settings.yaml.
+
 ## client_secrets.json, credentials.json, settings.yaml must be set up.
+
 I will set this up in future. But for now, you'll need to do this manually
