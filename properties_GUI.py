@@ -6,6 +6,7 @@ import json
 import extras
 import fuel_claim_calc
 import upload_to_drive
+import detect_mounting
 
 with open('data.json') as file:
     data = json.load(file)
@@ -209,9 +210,13 @@ class C_InputOutput(extras.CollapsibleFrame):
                 json.dump(data, file)
             self.output_button['text'] = f'Output: {self.output_path}'
 
-    def add_device(self):
-        device = CollapsibleDevice(master=self._contents, title='No Name', borderwidth=5)
-        device.notify_changes()
+    def add_device(self, title='No Name', device={"name": "No Name", "dir": "", "is_360": False, "resizable": True}):
+        self.device = CollapsibleDevice(master=self._contents, title=title, device=device, borderwidth=5)
+        self.device.notify_changes()
+
+    def notify_add(self):
+        self 
+        
             
 
 
@@ -263,6 +268,7 @@ class PropertiesFrame(tk.Frame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         collapsible_option = C_InputOutput(self, title='Input/Output')
+        detect_mounting.dm.listen(input_output_gui=collapsible_option)
         collapsible_option = C_OpenLinks(self, title='Open links')
         collapsible_option = CUploadToDrive(self, title='Upload to Drive')
         collapsible_option = C_FuelClaim(self, title='Fuel claim')

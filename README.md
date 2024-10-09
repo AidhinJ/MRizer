@@ -22,7 +22,4 @@ python3 mrizer.py
 Otherwise simply run the mrizer.py in your IDE.
 
 ## Upload to drive. client_secrets.json, credentials.json, settings.yaml.
-
-## client_secrets.json, credentials.json, settings.yaml must be set up.
-
 I will set this up in future. But for now, you'll need to do this manually

@@ -6,6 +6,7 @@ import settings2
 import PhotoSorter
 import MR_Cards
 import properties_GUI
+import detect_mounting
 
 photosorter = PhotoSorter.PhotoSorter()
 
@@ -30,10 +31,14 @@ def open_folder(dir):
         subprocess.Popen(['xdg-open', dir])
 
 def mrize():
+    # Before we begin, turn off detect mounting
+    detect_mounting.dm.stop_listen()
     try:
         photosorter.tasks()
     except Exception as e:
         tk.messagebox.showinfo(e.args[0], e.args[1])
+    # Resume detect mounting
+    detect_mounting.dm.resume_listen()
         
 
 def main():

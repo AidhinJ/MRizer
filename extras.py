@@ -50,8 +50,8 @@ def image_resize(dir=None, width_height=(1920, 1080)):
     if image is None:
         return
     height, width, channels = image.shape
-    # Checks if aspect ratio is 16:9 kinda silly but works
-    if (height / width) == 0.5625:
+    # Checks if aspect ratio is around 16:9 kinda silly but works
+    if 0.5600 <= (height / width) <= 0.5650:
         # Resize to a specific width and height
         resized_image = cv2.resize(image, width_height, interpolation=cv2.INTER_CUBIC) 
         cv2.imwrite(dir, resized_image)
